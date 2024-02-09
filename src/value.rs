@@ -4,6 +4,7 @@ use std::str::FromStr;
 use chrono::{DateTime, NaiveTime, Utc};
 
 use crate::error::ParseError;
+use crate::token::Token;
 
 #[derive(Debug)]
 pub enum Value {
@@ -23,6 +24,7 @@ impl FromStr for Value {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let tokens = s.chars().map(Into::into).collect::<Vec<Token>>();
         Ok(Self::Boolean(false))
     }
 }
