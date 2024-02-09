@@ -43,6 +43,51 @@ impl From<char> for Token {
     }
 }
 
+#[derive(Debug)]
+pub struct InputTokens {
+    line: usize,
+    col: usize,
+    pos: usize,
+    tokens: Vec<Token>,
+}
+
+impl FromIterator<char> for InputTokens {
+    fn from_iter<T: IntoIterator<Item = char>>(iter: T) -> Self {
+        let tokens = iter.into_iter().map(Into::into).collect();
+        Self {
+            line: 0,
+            col: 0,
+            pos: 0,
+            tokens,
+        }
+    }
+}
+
+impl Iterator for InputTokens {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.tokens.get(self.pos).cloned().map(|t| {
+            if t == Token::NewLine {
+                self.line += 1;
+                self.col = 0;
+            }
+            self.pos += 1;
+            t
+        })
+    }
+}
+
+impl InputTokens {
+    pub fn has_next(&self) -> bool {
+        self.tokens.len() > self.pos
+    }
+
+    pub fn next_token(&self) -> Option<Token> {
+        self.tokens.get(self.pos + 1).cloned()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
